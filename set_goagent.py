@@ -6,8 +6,13 @@ import sys
 from GCC import  net_address_set
 import threading
 import time
-import ConfigParser
+import socket
 
+try:
+    import requests
+except ImportError:
+    print("Please 'pip install requests'")
+    sys.exit(0)
 
 init_threading_count = threading.activeCount()
 ipList = []
@@ -17,11 +22,7 @@ def get_host(ip_address):
     """
     test ip is connected to port 443
     """
-    try:
-        import requests
-    except ImportError as e:
-        print "Please 'pip install requests'"
-        return -1
+
     try:
         from requests.exceptions import SSLError, Timeout
         headers=''
@@ -64,7 +65,7 @@ def get_ip(ip_s):
             ip = ip_tuple[0] + '.' + str(nu)
             get_thread = GetHost(ip)
             get_thread.start()
-    print threading.activeCount() - init_threading_count, 'threading working...'
+    print(threading.activeCount() - init_threading_count, 'threading working...')
     while threading.activeCount() > init_threading_count:
         pass
 
@@ -103,11 +104,17 @@ def dic_to_config(input_iter):
     """
     all iter change to config file
     """
-    config = ConfigParser.RawConfigParser()
-    for m in input_iter:
-        keys = m.keys()[0]
-        values = m.values()[0]
+    if sys.version < '3':
+        import ConfigParser
         from ConfigParser import DuplicateSectionError
+        config = ConfigParser.RawConfigParser()
+    else:
+        import configparser
+        from configparser import DuplicateSectionError
+        config = configparser.RawConfigParser()
+    for m in input_iter:
+        keys = list(m.keys())[0]
+        values = list(m.values())[0]
         try:
             config.add_section(values)
         except DuplicateSectionError:
@@ -149,26 +156,34 @@ class GetHost(threading.Thread):
 
     def run(self):
         a = get_host(self.ip_address)
-        global lock
+        # global lock
         try:
-            lock.acquire()
+            # lock.acquire()
             if isinstance(a, list):
                 ipList.append(a)
         except:
             pass
-        finally:
-            lock.release()
+        # finally:
+        #     lock.release()
     def stop(self):
         pass
 
 def run_pro():
+    """
+    """
+    #
     get_ip(net_address(net_address_set))
     dic_to_config(filter_ip(ipList))
 
 
 
 if __name__ == '__main__':
-    global lock
-    lock = threading.Lock()
+    # global lock
+    # lock = threading.Lock()
     run_pro()
+    # try:
+    #     ping.verbose_ping('www.google.com', count=3)
+    #     delay = ping.Ping('www.wikipedia.org', timeout=2000).do()
+    # except socket.error, e:
+    #     print "Ping Error:", e
 
