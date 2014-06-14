@@ -107,8 +107,8 @@ def dic_to_config(input_iter):
     """
     config = configparser.RawConfigParser()
     for m in input_iter:
-        keys = m.keys()
-        values = m.values()
+        keys = list(m.keys())[0]
+        values = list(m.values())[0]
         from configparser import DuplicateSectionError
         try:
             config.add_section(values)
@@ -176,9 +176,5 @@ if __name__ == '__main__':
     global lock
     lock = threading.Lock()
     run_pro()
-    # try:
-    #     ping.verbose_ping('www.google.com', count=3)
-    #     delay = ping.Ping('www.wikipedia.org', timeout=2000).do()
-    # except socket.error, e:
-    #     print "Ping Error:", e
+
 
