@@ -7,16 +7,14 @@ from GGC import  net_address_set
 import threading
 import time
 import socket
+# import ping
+import requests
+from requests.exceptions import SSLError, Timeout
 
-try:
-    import requests
-except ImportError:
-    print("Please 'pip install requests'")
-    sys.exit(0)
 
 init_threading_count = threading.activeCount()
 ipList = []
-
+pyver2 = sys.version < '3'
 
 def get_host(ip_address):
     """
@@ -24,7 +22,6 @@ def get_host(ip_address):
     """
 
     try:
-        from requests.exceptions import SSLError, Timeout
         headers=''
         requests.get('https://' + ip_address, timeout=2)
         return -2
@@ -97,7 +94,7 @@ def dic_to_config(input_iter):
     """
     all iter change to config file
     """
-    if sys.version < '3':
+    if pyver2:
         import ConfigParser
         from ConfigParser import DuplicateSectionError
         config = ConfigParser.RawConfigParser()
@@ -159,13 +156,16 @@ class GetHost(threading.Thread):
     def stop(self):
         pass
 
+
+
+
 def run_pro():
     """
     """
     #
     get_ip(net_address(net_address_set))
     dic_to_config(filter_ip(ipList))
-
+# import ping
 
 
 if __name__ == '__main__':
