@@ -11,6 +11,10 @@ import ping
 import requests
 from requests.exceptions import SSLError, Timeout
 
+try:
+    p = sys.argv[1]
+except IndexError:
+    p = False
 
 init_threading_count = threading.activeCount()
 ipList = []
@@ -110,8 +114,12 @@ def dic_to_config(input_iter):
             config.add_section(m['name'])
         except DuplicateSectionError:
             pass
-        if m['name'] == 'google' and int(m['ping']) < 100: # ping < 100
-            iplist.append(m['ip'])
+        if p:
+            if m['name'] == 'google' and int(m['ping']) < p: # ping < 100
+                iplist.append(m['ip'])
+        else:
+            if m['name'] == 'google':
+                ipList.append(m['ip'])
         config.set(m['name'], m['ip'], m['ping'])
     config.add_section('iplist')
     config.set('iplist', 'google_hk', '|'.join(iplist))
