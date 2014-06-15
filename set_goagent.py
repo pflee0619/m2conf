@@ -218,8 +218,7 @@ def run_pro():
     """
     get_ip(net_address(dict_name_set[set_name]))
     to_config(group_ip(ipList))
-    # import ping
-    # print ping.quiet_ping('www.google.com')[2]
+
 
 if __name__ == '__main__':
     start_time = time.clock()
