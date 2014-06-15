@@ -6,17 +6,17 @@ For GoAgent
 ## Requirements ##
 * [Python 2.7](https://www.python.org/downloads/) (recommend)
 * Linux/Mac/Windows
-* [requests](https://pypi.python.org/pypi/requests)
 
 ## How to use ##
 1. install [python 2.7](https://www.python.org/downloads/)  
     Mac  
     ```brew install python```  
     Ubuntu  
-    ```sudo apt-get install python```
-2. install [requests](https://pypi.python.org/pypi/requests)  
-    ```pip install requests``` 
-3. python set_goagent.py
+    ```sudo apt-get install python```  
+3. execute script  
+    need root because of ping  
+    ```sudo python set_goagent.py```
+    
 
 ## For Chinese ##
 
