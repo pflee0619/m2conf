@@ -65,27 +65,31 @@ def get_ip(ip_s):
 
 def filter_ip(ip_ss):
     for tempList in ip_ss:
-        if str(tempList[0]).find('android.com') != -1:
+        if 'appengine' in str(tempList[0]):
+            yield {tempList[1]: 'appengine'}
+        if 'appspot' in str(tempList[0]):
+            yield {tempList[1]: 'appspot'}
+        if 'android.com' in (tempList[0]):
             yield {tempList[1]: 'android'}
-        if str(tempList[0]).find('ggpht') != -1:
+        if 'ggpht' in str(tempList[0]):
             yield {tempList[1]: 'ggpht'}
-        if str(tempList[0]).find('gstatic.com') != -1:
+        if 'gstatic.com' in str(tempList[0]):
             yield {tempList[1]: 'gstatic'}
-        if str(tempList[0]).find('googleapis') != -1:
+        if 'googleapis' in str(tempList[0]):
             yield {tempList[1]: 'googleapis'}
-        if str(tempList[0]).find('talk') != -1:
+        if 'talk' in str(tempList[0]):
             yield {tempList[1]: 'talk'}
-        if str(tempList[0]).find('googleusercontent') != -1:
+        if 'googleusercontent' in str(tempList[0]):
             yield {tempList[1]: 'googleusercontent'}
-        if str(tempList[0]).find('googlecode') != -1:
+        if 'googlecode' in str(tempList[0]):
             yield {tempList[1]: 'googlecode'}
-        if str(tempList[0]).find('googlesource') != -1:
+        if 'googlesource' in str(tempList[0]):
             yield {tempList[1]: 'googlesource'}
-        if str(tempList[0]).find('googlevideo') != -1:
+        if 'googlevideo' in str(tempList[0]):
             yield {tempList[1]: 'googlevideo'}
-        if str(tempList[0]).find('googlegroups') != -1:
+        if 'googlegroups' in str(tempList[0]):
             yield {tempList[1]: 'googlegroups'}
-        if str(tempList[0]).find('google') != -1:
+        if '*.google.com' in tempList[0]:
             yield {tempList[1]: 'google'}
 
 
