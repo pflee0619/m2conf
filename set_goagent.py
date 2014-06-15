@@ -3,18 +3,31 @@
 # auther Kim Kong  kongqingzhang@gmail.com
 import pdb
 import sys
-from GGC import  net_address_set
+from GGC import  ggc_set,facebook_set,twitter_set
 import threading
 import time
 import socket
 import ping
 import requests
+import re
 from requests.exceptions import SSLError, Timeout
 
+
 try:
-    p = sys.argv[1]
+    set_name = sys.argv[1]
+    if re.match(r'[0-9]+', set_name) is not None:
+        max_ping_value = sys.argv[1]
 except IndexError:
-    p = False
+    set_name = 'google'
+try:
+    max_ping_value = sys.argv[2]
+except IndexError:
+    max_ping_value = False
+
+dict_name_set = {
+    'google': ggc_set,
+    'facebook': facebook_set,
+    'twitter': twitter_set}
 
 init_threading_count = threading.activeCount()
 ipList = []
@@ -69,35 +82,59 @@ def group_ip(ip_ss):
     for temp_list in ip_ss:
         if 'appengine' in str(temp_list[0]):
             # yield {temp_list[1]: 'appengine'}
-            yield {'name': 'appengine', 'ip': temp_list[1], 'ping': temp_list[2]}
+            # yield {'name': 'appengine', 'ip': temp_list[1], 'ping': temp_list[2]}
+            yield ['appengine', temp_list[1], temp_list[2]]
         if 'appspot' in str(temp_list[0]):
-            yield {'name': 'appspot', 'ip': temp_list[1], 'ping': temp_list[2]}
+            # yield {'name': 'appspot', 'ip': temp_list[1], 'ping': temp_list[2]}
+            yield ['appspot', temp_list[1], temp_list[2]]
         if 'android.com' in (temp_list[0]):
-            yield {'name': 'android', 'ip': temp_list[1], 'ping': temp_list[2]}
+            # yield {'name': 'android', 'ip': temp_list[1], 'ping': temp_list[2]}
+            yield ['android', temp_list[1], temp_list[2]]
         if 'ggpht' in str(temp_list[0]):
-            yield {'name': 'ggpht', 'ip': temp_list[1], 'ping': temp_list[2]}
+            # yield {'name': 'ggpht', 'ip': temp_list[1], 'ping': temp_list[2]}
+            yield ['ggpht', temp_list[1], temp_list[2]]
         if 'gstatic.com' in str(temp_list[0]):
-            yield {'name': 'gstatic', 'ip': temp_list[1], 'ping': temp_list[2]}
+            # yield {'name': 'gstatic', 'ip': temp_list[1], 'ping': temp_list[2]}
+            yield ['gstatic', temp_list[1], temp_list[2]]
         if 'googleapis' in str(temp_list[0]):
-            yield {'name': 'googleapis', 'ip': temp_list[1], 'ping': temp_list[2]}
+            # yield {'name': 'googleapis', 'ip': temp_list[1], 'ping': temp_list[2]}
+            yield ['googleapis', temp_list[1], temp_list[2]]
         if 'talk' in str(temp_list[0]):
-            yield {'name': 'talk', 'ip': temp_list[1], 'ping': temp_list[2]}
+            # yield {'name': 'talk', 'ip': temp_list[1], 'ping': temp_list[2]}
+            yield ['talk', temp_list[1], temp_list[2]]
         if 'googleusercontent' in str(temp_list[0]):
-            yield {'name': 'googleusercontent', 'ip': temp_list[1], 'ping': temp_list[2]}
+            # yield {'name': 'googleusercontent', 'ip': temp_list[1], 'ping': temp_list[2]}
+            yield ['googleusercontent', temp_list[1], temp_list[2]]
         if 'googlecode' in str(temp_list[0]):
-            yield {'name': 'googlecode', 'ip': temp_list[1], 'ping': temp_list[2]}
+            # yield {'name': 'googlecode', 'ip': temp_list[1], 'ping': temp_list[2]}
+            yield ['', temp_list[1], temp_list[2]]
         if 'googlesource' in str(temp_list[0]):
-            yield {'name': 'googlesource', 'ip': temp_list[1], 'ping': temp_list[2]}
+            # yield {'name': 'googlesource', 'ip': temp_list[1], 'ping': temp_list[2]}
+            yield ['googlesource', temp_list[1], temp_list[2]]
         if 'googlevideo' in str(temp_list[0]):
-            yield {'name': 'googlevideo', 'ip': temp_list[1], 'ping': temp_list[2]}
+            # yield {'name': 'googlevideo', 'ip': temp_list[1], 'ping': temp_list[2]}
+            yield ['googlevideo', temp_list[1], temp_list[2]]
         if 'googlegroups' in str(temp_list[0]):
-            yield {'name': 'googlegroups', 'ip': temp_list[1], 'ping': temp_list[2]}
+            # yield {'name': 'googlegroups', 'ip': temp_list[1], 'ping': temp_list[2]}
+            yield ['', temp_list[1], temp_list[2]]
         if '*.google.com' in temp_list[0] or 'google.com' in temp_list[0]:
-            yield {'name': 'google', 'ip': temp_list[1], 'ping': temp_list[2]}
+            # yield {'name': 'google', 'ip': temp_list[1], 'ping': temp_list[2]}
+            yield ['google', temp_list[1], temp_list[2]]
+        if '*.facebook.com' in temp_list[0] or 'facebook.com' in temp_list[0]:
+            # yield {'name': 'facebook', 'ip': temp_list[1], 'ping': temp_list[2]}
+            yield ['facebook', temp_list[1], temp_list[2]]
+        if 'fbcdn' in str(temp_list[0]):
+            # yield {'name': 'fbcdn'}
+            yield ['fbcdn', temp_list[1], temp_list[2]]
+        if 'fbsbx' in str(temp_list[0]):
+            yield ['fbsbx', temp_list[1], temp_list[2]]
+        if 'akamai' in str(temp_list[0]):
+            yield ['twitter', temp_list[1], temp_list[2]]
         # yield {'name': 'all', 'ip': temp_list[1], 'ping': temp_list[2]}
 
 
-def dic_to_config(input_iter):
+
+def to_config(input_iter):
     """
     all iter change to config file
     """
@@ -112,22 +149,21 @@ def dic_to_config(input_iter):
         config = configparser.RawConfigParser()
     for m in input_iter:
         try:
-            config.add_section(m['name'])
+            config.add_section(m[0])
         except DuplicateSectionError:
             pass
-        if p:
-            if m['name'] == 'google' and int(m['ping']) < int(p): # ping < 100
+        if max_ping_value:
+            if m[0] == 'google' and int(m[2]) < int(max_ping_value): # ping < 100
                 # print int(m['ping']) < 100
-                google_list.append(m['ip'])
+                google_list.append(m[1])
         else:
-            if m['name'] == 'google':
+            if m[0] == 'google':
                 # print True
-                google_list.append(m['ip'])
-        config.set(m['name'], m['ip'], m['ping'])
+                google_list.append(m[1])
+        config.set(m[0], m[1], m[2])
     config.add_section('iplist')
     config.set('iplist', 'google_hk', '|'.join(google_list))
     config.write(open('new_host_file', 'w'))
-
 def net_address(net_address_s):
     """
     "192.168.1.0/24" net address change to tuplues ("192.168.1", 0, 255)
@@ -180,15 +216,18 @@ class GetHost(threading.Thread):
 def run_pro():
     """
     """
-    #
-    get_ip(net_address(net_address_set))
-    dic_to_config(group_ip(ipList))
+    get_ip(net_address(dict_name_set[set_name]))
+    to_config(group_ip(ipList))
     # import ping
     # print ping.quiet_ping('www.google.com')[2]
 
 if __name__ == '__main__':
+    start_time = time.clock()
     global lock
     lock = threading.Lock()
     run_pro()
+    end_time = time.clock()
+    t = str(end_time - start_time)
+    print('run %s s' % t)
 
 
