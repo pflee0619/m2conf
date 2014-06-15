@@ -94,13 +94,14 @@ def group_ip(ip_ss):
             yield {'name': 'googlegroups', 'ip': temp_list[1], 'ping': temp_list[2]}
         if '*.google.com' in temp_list[0] or 'google.com' in temp_list[0]:
             yield {'name': 'google', 'ip': temp_list[1], 'ping': temp_list[2]}
+        # yield {'name': 'all', 'ip': temp_list[1], 'ping': temp_list[2]}
 
 
 def dic_to_config(input_iter):
     """
     all iter change to config file
     """
-    iplist = []
+    google_list = []
     if pyver2:
         import ConfigParser
         from ConfigParser import DuplicateSectionError
@@ -115,14 +116,16 @@ def dic_to_config(input_iter):
         except DuplicateSectionError:
             pass
         if p:
-            if m['name'] == 'google' and int(m['ping']) < p: # ping < 100
-                iplist.append(m['ip'])
+            if m['name'] == 'google' and int(m['ping']) < int(p): # ping < 100
+                # print int(m['ping']) < 100
+                google_list.append(m['ip'])
         else:
             if m['name'] == 'google':
-                ipList.append(m['ip'])
+                # print True
+                google_list.append(m['ip'])
         config.set(m['name'], m['ip'], m['ping'])
     config.add_section('iplist')
-    config.set('iplist', 'google_hk', '|'.join(iplist))
+    config.set('iplist', 'google_hk', '|'.join(google_list))
     config.write(open('new_host_file', 'w'))
 
 def net_address(net_address_s):
