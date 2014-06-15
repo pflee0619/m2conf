@@ -96,6 +96,7 @@ def dic_to_config(input_iter):
     """
     all iter change to config file
     """
+    iplist = []
     if pyver2:
         import ConfigParser
         from ConfigParser import DuplicateSectionError
@@ -109,7 +110,11 @@ def dic_to_config(input_iter):
             config.add_section(m['name'])
         except DuplicateSectionError:
             pass
+        if m['name'] == 'google' and int(m['ping']) < 100: # ping < 100
+            iplist.append(m['ip'])
         config.set(m['name'], m['ip'], m['ping'])
+    config.add_section('iplist')
+    config.set('iplist', 'google_hk', '|'.join(iplist))
     config.write(open('new_host_file', 'w'))
 
 def net_address(net_address_s):
