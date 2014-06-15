@@ -3,7 +3,7 @@
 # auther Kim Kong  kongqingzhang@gmail.com
 import pdb
 import sys
-from GCC import  net_address_set
+from GGC import  net_address_set
 import threading
 import time
 import socket
@@ -49,12 +49,6 @@ def get_host(ip_address):
         # print ip_address + '\n' + str(e)
         return -4
 
-
-
-
-
-
-
 def get_ip(ip_s):
     """
     read 3-tuplues, get host and filter to iter, it's some bugs because I don't know  thread well
@@ -95,11 +89,6 @@ def filter_ip(ip_ss):
             yield {tempList[1]: 'google'}
 
 
-    # print threading.activeCount() - init_threading_count, 'threading working...'
-    # while threading.activeCount() > init_threading_count:
-    #     pass
-
-
 def dic_to_config(input_iter):
     """
     all iter change to config file
@@ -121,8 +110,6 @@ def dic_to_config(input_iter):
             pass
         config.set(values, keys, values)
     config.write(open('new_host_file', 'w'))
-
-
 
 def net_address(net_address_s):
     """
@@ -156,15 +143,15 @@ class GetHost(threading.Thread):
 
     def run(self):
         a = get_host(self.ip_address)
-        # global lock
+        global lock
         try:
-            # lock.acquire()
+            lock.acquire()
             if isinstance(a, list):
                 ipList.append(a)
         except:
             pass
-        # finally:
-        #     lock.release()
+        finally:
+            lock.release()
     def stop(self):
         pass
 
@@ -178,12 +165,8 @@ def run_pro():
 
 
 if __name__ == '__main__':
-    # global lock
-    # lock = threading.Lock()
+    global lock
+    lock = threading.Lock()
     run_pro()
-    # try:
-    #     ping.verbose_ping('www.google.com', count=3)
-    #     delay = ping.Ping('www.wikipedia.org', timeout=2000).do()
-    # except socket.error, e:
-    #     print "Ping Error:", e
+
 
