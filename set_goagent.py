@@ -181,13 +181,18 @@ def net_address(net_address_s):
         n = 0
         temp = 2 ** m
         while 1:
-            if m * n <= ip_number < m * (n + 1):
-                return [m * n, m * (n + 1)]
+            if temp * n <= ip_number < temp * (n + 1):
+                return [temp * n, temp * (n + 1)]
             n += 1
     for net in net_address_s:
         netlist = net.split('/')
         if int(netlist[1]) == 24:
             yield (netlist[0][:netlist[0].rindex('.')], 0, 255)
+        elif int(netlist[1]) > 24:
+            m = 32 - int(netlist[1])
+            ip_number = int(netlist[0].split('.')[3])
+            ip_number_list = get_ip_number_list(m, ip_number)
+            yield (netlist[0][:netlist[0].rindex('.')], int(ip_number_list[0]), int(ip_number_list[1]))
         elif 16 <= int(netlist[1]) < 24:
             m = 24 - int(netlist[1])
             ip_number = int(netlist[0].split('.')[2])
