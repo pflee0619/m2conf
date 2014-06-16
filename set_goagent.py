@@ -195,6 +195,7 @@ def to_config(input_iter):
         config.set(m[0], m[1], m[2][0])
     config.add_section('iplist')
     config.set('iplist', 'google_hk', '|'.join(google_list))
+    config.set('ipList', 'google_talk', '|'.join(talk_list))
     config.write(open('new_host_file', 'w'))
 
 
