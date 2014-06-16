@@ -26,12 +26,14 @@ pyver2 = sys.version < '3'
 temp_value = None
 
 usage = '''
-    -h, --help: get help
-    sudo python set_goagent.py:  get google host file and google_hk/talk iplist
-    sudo python set_goagent.py 100: get google host file, and google_hk/talk iplist ping delay<100
-    sudo python set_goagent.py facebook: get facebook host file
+------------------------
+-h, --help: get help
+sudo python set_goagent.py:  get google host file and google_hk/talk iplist
+sudo python set_goagent.py 100: get google host file, and google_hk/talk iplist ping delay<100
+sudo python set_goagent.py facebook: get facebook host file
 
-    if you are windows users, need admin open the cmd/command program, not need input sudo command.
+if you are windows users, need admin open the cmd/command program, not need input sudo command.
+----------------------------
 '''
 
 
