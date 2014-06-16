@@ -13,17 +13,6 @@ import re
 from requests.exceptions import SSLError, Timeout
 
 
-try:
-    set_name = sys.argv[1]
-    if re.match(r'[0-9]+', set_name) is not None:
-        set_name = 'google'
-        max_ping_value = sys.argv[1]
-except IndexError:
-    set_name = 'google'
-try:
-    max_ping_value = sys.argv[2]
-except IndexError:
-    max_ping_value = False
 
 dict_name_set = {
     'google': ggc_set,
@@ -33,6 +22,21 @@ dict_name_set = {
 init_threading_count = threading.activeCount()
 ipList = []
 pyver2 = sys.version < '3'
+
+temp_value = None
+
+try:
+    set_name = sys.argv[1]
+    if re.match(r'[0-9]+', set_name) is not None:
+        set_name = 'google'
+        temp_value = sys.argv[1]
+except IndexError:
+    set_name = 'google'
+try:
+    max_ping_value = sys.argv[2]
+except IndexError:
+    max_ping_value = temp_value if temp_value else False
+
 
 def get_host(ip_addr):
     """
@@ -48,7 +52,7 @@ def get_host(ip_addr):
         ping_list = ping.quiet_ping(ip_addr)
         ping_artt = ping_list[2]
         ping_lost = ping_list[0]
-        ping_value = 'delay: %.5sms, lost: %s%%' % (ping_artt, ping_lost)
+        ping_value = ['delay: %.5sms, lost: %s%%' % (ping_artt, ping_lost), ping_artt]
         if "', '" in str(e):
             name_list = str(e).split("', '")
             name_list[0] = name_list[0].split("'")[-1]
@@ -74,7 +78,7 @@ def get_ip(ip_s):
     """
     # print ip_s
     for ip_tuple in ip_s:
-        print ip_tuple
+        # print ip_tuple
         for nu in range(ip_tuple[1], ip_tuple[2]):
             ip = ip_tuple[0] + '.' + str(nu)
             get_thread = GetHost(ip)
@@ -158,14 +162,14 @@ def to_config(input_iter):
         except DuplicateSectionError:
             pass
         if max_ping_value:
-            if m[0] == 'google' and int(m[2]) < int(max_ping_value): # ping < 100
+            if m[0] == 'google' and int(m[2][1]) < int(max_ping_value): # ping < 100
                 # print int(m['ping']) < 100
                 google_list.append(m[1])
         else:
             if m[0] == 'google':
                 # print True
                 google_list.append(m[1])
-        config.set(m[0], m[1], m[2])
+        config.set(m[0], m[1], m[2][0])
     config.add_section('iplist')
     config.set('iplist', 'google_hk', '|'.join(google_list))
     config.write(open('new_host_file', 'w'))
