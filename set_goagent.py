@@ -25,22 +25,32 @@ pyver2 = sys.version < '3'
 
 temp_value = None
 
-try:
+usage = '''
+    -h, --help: get help
+    sudo python set_goagent.py:  get google host file and google_hk/talk iplist
+    sudo python set_goagent.py 100: get google host file, and google_hk/talk iplist ping delay<100
+    sudo python set_goagent.py facebook: get facebook host file
+
+    if you are windows users, need admin open the cmd/command program, not need input sudo command.
+'''
+
+
+"""
+get argv message
+"""
+
+max_ping_value = None
+set_name = 'google'
+if len(sys.argv) == 2:
     set_name = sys.argv[1]
     if re.match(r'[0-9]+', set_name) is not None:
         set_name = 'google'
-        temp_value = sys.argv[1]
-except IndexError:
-    set_name = 'google'
-try:
-    max_ping_value = sys.argv[2]
-except IndexError:
-    max_ping_value = temp_value if temp_value else False
+        max_ping_value = sys.argv[1]
 
 
 def get_host(ip_addr):
     """
-    test ip is connected to port 443
+    test ip is connected to port 443 and get ping message
     """
 
     try:
@@ -74,7 +84,7 @@ def get_host(ip_addr):
 
 def get_ip(ip_s):
     """
-    read 3-tuplues, get host and filter to iter, it's some bugs because I don't know  thread well
+    read ip_set it is changed by net_address function, then requests.get and ping ip, if access successfully, append it to ipList.
     """
     # print ip_s
     for ip_tuple in ip_s:
@@ -88,6 +98,9 @@ def get_ip(ip_s):
         pass
 
 def group_ip(ip_ss):
+    """
+    group ip it can be accessed
+    """
     for temp_list in ip_ss:
         if 'appengine' in str(temp_list[0]):
             # yield {temp_list[1]: 'appengine'}
@@ -146,8 +159,18 @@ def group_ip(ip_ss):
 def to_config(input_iter):
     """
     all iter change to config file
+    :Parameters    
+        :input_iter: will change the iter to config file
+    :Variable
+        :m[0]:  filter host
+        :m[1]:  ip_addr
+        :m[2]:  ping list
+        :m[2][0]: "delay: 418.6ms, lost: 0%"
+        :m[2][1]: ping_artt  avg ping delay, filter lower ping delay on line 172
+
     """
     google_list = []
+    talk_list = []
     if pyver2:
         import ConfigParser
         from ConfigParser import DuplicateSectionError
@@ -161,14 +184,12 @@ def to_config(input_iter):
             config.add_section(m[0])
         except DuplicateSectionError:
             pass
-        if max_ping_value:
-            if m[0] == 'google' and int(m[2][1]) < int(max_ping_value): # ping < 100
+        if max_ping_value and int(m[2][1]) < int(max_ping_value) or not max_ping_value:
+            if m[0] == 'appengine': # ping < 100
                 # print int(m['ping']) < 100
                 google_list.append(m[1])
-        else:
-            if m[0] == 'google':
-                # print True
-                google_list.append(m[1])
+            if m[0] == 'talk':
+                talk_list.append(m[1])
         config.set(m[0], m[1], m[2][0])
     config.add_section('iplist')
     config.set('iplist', 'google_hk', '|'.join(google_list))
@@ -240,6 +261,9 @@ def run_pro():
 
 if __name__ == '__main__':
     start_time = time.clock()
+    if len(sys.argv) == 2 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
+        print usage
+        sys.exit(0)
     global lock
     lock = threading.Lock()
     run_pro()
