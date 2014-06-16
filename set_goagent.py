@@ -45,8 +45,9 @@ def get_host(ip_addr):
         return -2
     except SSLError as e:
         name_list = []
-        ping_artt = ping.quiet_ping(ip_addr)[2]
-        ping_lost = ping.quiet_ping(ip_addr)[0]
+        ping_list = ping.quiet_ping(ip_addr)
+        ping_artt = ping_list[2]
+        ping_lost = ping_list[0]
         ping_value = 'delay: %.5sms, lost: %s%%' % (ping_artt, ping_lost)
         if "', '" in str(e):
             name_list = str(e).split("', '")
