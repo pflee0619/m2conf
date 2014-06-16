@@ -18,7 +18,7 @@ For GoAgent
     need root because of ping  
     ```sudo python set_goagent.py```  
     ```sudo python set_goagent.py value```  
-    if value = 100, the ip ping attr will be lower than 100
+    *ping delay of google_hk/talk will be lower than the value*
     
 
 ## For Chinese ##
