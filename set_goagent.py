@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# auther Kim Kong  kongqingzhang@gmail.com
+# author Kim Kong  kongqingzhang@gmail.com
 import pdb
 import sys
 from GGC import  ggc_set,facebook_set,twitter_set
