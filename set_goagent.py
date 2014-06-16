@@ -34,35 +34,37 @@ init_threading_count = threading.activeCount()
 ipList = []
 pyver2 = sys.version < '3'
 
-def get_host(ip_address):
+def get_host(ip_addr):
     """
     test ip is connected to port 443
     """
 
     try:
         headers=''
-        requests.get('https://' + ip_address, timeout=2)
+        requests.get('https://' + ip_addr, timeout=2)
         return -2
     except SSLError as e:
         name_list = []
-        ping_artt = ping.quiet_ping(ip_address)[2]
+        ping_artt = ping.quiet_ping(ip_addr)[2]
+        ping_lost = ping.quiet_ping(ip_addr)[0]
+        ping_value = 'delay: %.5sms, lost: %s%%' % (ping_artt, ping_lost)
         if "', '" in str(e):
             name_list = str(e).split("', '")
             name_list[0] = name_list[0].split("'")[-1]
             name_list[-1] = name_list[-1].split("'")[0]
-            # print ip_address + '\n'
-            return [name_list, ip_address, ping_artt]
+            # print ip_addr + '\n'
+            return [name_list, ip_addr, ping_value]
         elif 'match' in str(e):
             temp_list = str(e).split("'")
             name_list.append(temp_list[-2])
-            # print ip_address
-            return [name_list, ip_address, ping_artt]
+            # print ip_addr
+            return [name_list, ip_addr, ping_value]
         return e
     except Timeout:
-        # print ip_address + ' time out'
+        # print ip_addr + ' time out'
         return -3
     except Exception as e:
-        # print ip_address + '\n' + str(e)
+        # print ip_addr + '\n' + str(e)
         return -4
 
 def get_ip(ip_s):
@@ -165,6 +167,10 @@ def to_config(input_iter):
     config.add_section('iplist')
     config.set('iplist', 'google_hk', '|'.join(google_list))
     config.write(open('new_host_file', 'w'))
+
+
+
+
 def net_address(net_address_s):
     """
     "192.168.1.0/24" net address change to tuplues ("192.168.1", 0, 255)
