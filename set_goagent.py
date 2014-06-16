@@ -16,6 +16,7 @@ from requests.exceptions import SSLError, Timeout
 try:
     set_name = sys.argv[1]
     if re.match(r'[0-9]+', set_name) is not None:
+        set_name = 'google'
         max_ping_value = sys.argv[1]
 except IndexError:
     set_name = 'google'
