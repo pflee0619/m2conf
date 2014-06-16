@@ -74,7 +74,8 @@ def get_ip(ip_s):
     """
     # print ip_s
     for ip_tuple in ip_s:
-        for nu in range(ip_tuple[1], ip_tuple[2] + 1):
+        print ip_tuple
+        for nu in range(ip_tuple[1], ip_tuple[2]):
             ip = ip_tuple[0] + '.' + str(nu)
             get_thread = GetHost(ip)
             get_thread.start()
@@ -192,7 +193,7 @@ def net_address(net_address_s):
             m = 32 - int(netlist[1])
             ip_number = int(netlist[0].split('.')[3])
             ip_number_list = get_ip_number_list(m, ip_number)
-            yield (netlist[0][:netlist[0].rindex('.')], int(ip_number_list[0]), int(ip_number_list[1]))
+            yield (netlist[0][:netlist[0].rindex('.')], ip_number_list[0], ip_number_list[1])
         elif 16 <= int(netlist[1]) < 24:
             m = 24 - int(netlist[1])
             ip_number = int(netlist[0].split('.')[2])
