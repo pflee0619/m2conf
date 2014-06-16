@@ -10,15 +10,17 @@ For GoAgent
 
 ## How to use ##
 1. install [python 2.7](https://www.python.org/downloads/)  
-    Mac  
+    *Mac*  
     ```brew install python```  
-    Ubuntu  
+    *Ubuntu*  
     ```sudo apt-get install python```  
-3. execute script  
-    need root because of ping  
+2. execute script  
     ```sudo python set_goagent.py```  
     ```sudo python set_goagent.py value```  
-    *ping delay of google_hk/talk will be lower than the value*
+    ```sudo python set_goagent.py -h```  
+    > need root/admin because of ping  
+    > ping delay of google_hk/talk will be lower than the value
+
     
 
 ## For Chinese ##
