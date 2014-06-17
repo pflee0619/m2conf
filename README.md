@@ -20,6 +20,7 @@ For GoAgent
     ```sudo python set_goagent.py -h```  
     > need root/admin because of ping  
     > ping delay of google_hk/talk will be lower than the value
+3. if find ```ValueError: filedescriptor out of range in select()```, you can open IDLE with root/admin then F5 run it.
 
     
 
