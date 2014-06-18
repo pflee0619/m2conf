@@ -22,9 +22,7 @@ dict_name_set = {
 init_threading_count = threading.activeCount()
 ipList = []
 pyver2 = sys.version < '3'
-
-temp_value = None
-
+threadLimiter = threading.BoundedSemaphore(100)
 usage = '''
 ------------------------
 -h, --help: get help
@@ -84,20 +82,36 @@ def get_host(ip_addr):
         # print ip_addr + '\n' + str(e)
         return -4
 
-def get_ip(ip_s):
+def get_ip(ip_s, thread_limit=None, timeout=0.01):
     """
     read ip_set it is changed by net_address function, then requests.get and ping ip, if access successfully, append it to ipList.
     """
     # print ip_s
+    ip_addr_list=[]
+    lock = threading.Lock()
+    thread_pool = []
     for ip_tuple in ip_s:
         # print ip_tuple
         for nu in range(ip_tuple[1], ip_tuple[2]):
             ip = ip_tuple[0] + '.' + str(nu)
-            get_thread = GetHost(ip)
+            ip_addr_list.append(ip)
+
+    while ip_addr_list or thread_pool:
+        while ip_addr_list and (thread_limit is None or len(thread_pool) < thread_limit):
+            ip = ip_addr_list.pop()
+            get_thread = GetHost(ip, lock)
             get_thread.start()
-    print(threading.activeCount() - init_threading_count, 'threading working...')
-    while threading.activeCount() > init_threading_count:
-        pass
+            thread_pool.append(get_thread)
+
+        for get_thread in thread_pool:
+            get_thread.join(timeout=timeout)
+            if not get_thread.is_alive():
+                thread_pool.remove(get_thread)
+            
+        print(threading.activeCount() - init_threading_count, 'threading working...')
+        while threading.activeCount() > init_threading_count:
+            pass
+    print("all threads are done")
 
 def group_ip(ip_ss):
     """
@@ -173,12 +187,12 @@ def to_config(input_iter):
     """
     google_list = []
     talk_list = []
-    if pyver2:
+    try:
         import ConfigParser
         from ConfigParser import DuplicateSectionError
         config = ConfigParser.RawConfigParser()
-    else:
-        import configparser
+    except ImportError:
+        import configparser  # python 3
         from configparser import DuplicateSectionError
         config = configparser.RawConfigParser()
     for m in input_iter:
@@ -234,21 +248,24 @@ def net_address(net_address_s):
 
 class GetHost(threading.Thread):
 
-    def __init__(self, ip_address):
+    def __init__(self, ip_address, lock):
         threading.Thread.__init__(self)
         self.ip_address = ip_address
+        self.lock = lock
 
     def run(self):
+        threadLimiter.acquire()
         a = get_host(self.ip_address)
-        global lock
+        # global lock
         try:
-            lock.acquire()
             if isinstance(a, list):
                 ipList.append(a)
         except:
             pass
         finally:
-            lock.release()
+            threadLimiter.release()
+
+
     def stop(self):
         pass
 
@@ -258,7 +275,7 @@ class GetHost(threading.Thread):
 def run_pro():
     """
     """
-    get_ip(net_address(dict_name_set[set_name]))
+    get_ip(net_address(dict_name_set[set_name]), thread_limit=500)
     to_config(group_ip(ipList))
 
 
@@ -267,8 +284,8 @@ if __name__ == '__main__':
     if len(sys.argv) == 2 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
         print usage
         sys.exit(0)
-    global lock
-    lock = threading.Lock()
+    # global lock
+    # lock = threading.Lock()
     run_pro()
     end_time = time.clock()
     t = str(end_time - start_time)
