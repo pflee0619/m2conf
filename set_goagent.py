@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # author Kim Kong  kongqingzhang@gmail.com
-import pdb
 import sys
 from GGC import  ggc_set,facebook_set,twitter_set
 import threading
 import time
-import socket
 import ping
 import requests
 import re
@@ -107,7 +105,7 @@ def get_ip(ip_s, thread_limit=None, timeout=0.01):
             get_thread.join(timeout=timeout)
             if not get_thread.is_alive():
                 thread_pool.remove(get_thread)
-            
+
         print(threading.activeCount() - init_threading_count, 'threading working...')
         while threading.activeCount() > init_threading_count:
             pass
@@ -119,7 +117,6 @@ def group_ip(ip_ss):
     """
     for temp_list in ip_ss:
         if 'appengine' in str(temp_list[0]):
-            # yield {temp_list[1]: 'appengine'}
             # yield {'name': 'appengine', 'ip': temp_list[1], 'ping': temp_list[2]}
             yield ['appengine', temp_list[1], temp_list[2]]
         if 'appspot' in str(temp_list[0]):
@@ -175,7 +172,7 @@ def group_ip(ip_ss):
 def to_config(input_iter):
     """
     all iter change to config file
-    :Parameters    
+    :Parameters
         :input_iter: will change the iter to config file
     :Variable
         :m[0]:  filter host
@@ -200,9 +197,8 @@ def to_config(input_iter):
             config.add_section(m[0])
         except DuplicateSectionError:
             pass
-        if max_ping_value and int(m[2][1]) < int(max_ping_value) or not max_ping_value:
+        if max_ping_value and m[2][1] and int(m[2][1]) < int(max_ping_value) or not max_ping_value:
             if m[0] == 'appengine': # ping < 100
-                # print int(m['ping']) < 100
                 google_list.append(m[1])
             if m[0] == 'talk':
                 talk_list.append(m[1])
@@ -256,7 +252,6 @@ class GetHost(threading.Thread):
     def run(self):
         threadLimiter.acquire()
         a = get_host(self.ip_address)
-        # global lock
         try:
             if isinstance(a, list):
                 ipList.append(a)
@@ -275,7 +270,7 @@ class GetHost(threading.Thread):
 def run_pro():
     """
     """
-    get_ip(net_address(dict_name_set[set_name]), thread_limit=500)
+    get_ip(net_address(dict_name_set[set_name]), thread_limit=2000)
     to_config(group_ip(ipList))
 
 
@@ -284,8 +279,6 @@ if __name__ == '__main__':
     if len(sys.argv) == 2 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
         print usage
         sys.exit(0)
-    # global lock
-    # lock = threading.Lock()
     run_pro()
     end_time = time.clock()
     t = str(end_time - start_time)
