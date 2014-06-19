@@ -100,12 +100,14 @@ def get_ip(ip_s, thread_limit=None, timeout=0.01):
             get_thread.start()
             thread_pool.append(get_thread)
 
+        print(threading.activeCount() - init_threading_count, 'threading working...')
+
+
         for get_thread in thread_pool:
             get_thread.join(timeout=timeout)
             if not get_thread.is_alive():
                 thread_pool.remove(get_thread)
 
-        print(threading.activeCount() - init_threading_count, 'threading working...')
         # while threading.activeCount() > init_threading_count:
         #     pass
     print("all threads are done")
