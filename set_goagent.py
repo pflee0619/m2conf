@@ -20,7 +20,6 @@ dict_name_set = {
 init_threading_count = threading.activeCount()
 ipList = []
 pyver2 = sys.version < '3'
-threadLimiter = threading.BoundedSemaphore(100)
 usage = '''
 ------------------------
 -h, --help: get help
@@ -250,15 +249,12 @@ class GetHost(threading.Thread):
         self.lock = lock
 
     def run(self):
-        threadLimiter.acquire()
         a = get_host(self.ip_address)
         try:
             if isinstance(a, list):
                 ipList.append(a)
         except:
             pass
-        finally:
-            threadLimiter.release()
 
 
     def stop(self):
