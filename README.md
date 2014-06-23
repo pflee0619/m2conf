@@ -2,7 +2,8 @@ For GoAgent
 ===========
 ========^== 
 ## DON'T PANIC ##
-本工具为批量选择GCC IP 工具。
+本工具为批量选择GCC IP 工具。  
+首先从GGC.py选择要扫描的ip段！！
 
 ## Requirements ##
 * [Python 2.7](https://www.python.org/downloads/) (recommend)
@@ -20,7 +21,7 @@ For GoAgent
     ```sudo python set_goagent.py -h```  
     > need root/admin because of ping  
     > ping delay of google_hk/talk will be lower than the value
-3. if find ```ValueError: filedescriptor out of range in select()```, you can open IDLE with root/admin then F5 run it.
+
 
     
 
