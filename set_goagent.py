@@ -59,7 +59,7 @@ def get_host(ip_addr):
         ping_list = ping.quiet_ping(ip_addr)
         ping_artt = ping_list[2]
         ping_lost = ping_list[0]
-        ping_value = ['delay: %.5sms, lost: %s%%' % (ping_artt, ping_lost), ping_artt]
+        ping_value = ['delay: %.5sms, lost: %s%%' % (ping_artt, ping_lost), ping_artt, ping_lost]
         if "', '" in str(e):
             name_list = str(e).split("', '")
             name_list[0] = name_list[0].split("'")[-1]
@@ -199,7 +199,7 @@ def to_config(input_iter):
         except DuplicateSectionError:
             pass
         config.set(m[0], m[1], m[2][0])
-        if max_ping_value and m[2][1] and int(m[2][1]) < int(max_ping_value) or not max_ping_value:
+        if max_ping_value and m[2][1] and int(m[2][1]) < int(max_ping_value) or not max_ping_value and m[2] == 0:
             if m[0] == 'appengine': # ping < 100
                 google_list.append(m[1])
             if m[0] == 'talk':
