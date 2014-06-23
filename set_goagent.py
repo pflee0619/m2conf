@@ -198,12 +198,12 @@ def to_config(input_iter):
             config.add_section(m[0])
         except DuplicateSectionError:
             pass
+        config.set(m[0], m[1], m[2][0])
         if max_ping_value and m[2][1] and int(m[2][1]) < int(max_ping_value) or not max_ping_value:
             if m[0] == 'appengine': # ping < 100
                 google_list.append(m[1])
             if m[0] == 'talk':
                 talk_list.append(m[1])
-        config.set(m[0], m[1], m[2][0])
     config.add_section('iplist')
     config.set('iplist', 'google_hk', '|'.join(google_list))
     config.set('iplist', 'google_talk', '|'.join(talk_list))
