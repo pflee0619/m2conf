@@ -268,7 +268,7 @@ class GetHost(threading.Thread):
 def run_pro():
     """
     """
-    get_ip(net_address(dict_name_set[set_name]), thread_limit=800)
+    get_ip(net_address(dict_name_set[set_name]), thread_limit=500)
     to_config(group_ip(ipList))
 
 
