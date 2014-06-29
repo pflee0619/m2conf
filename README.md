@@ -11,10 +11,6 @@ For GoAgent
 
 ## How to use ##
 1. install [python 2.7](https://www.python.org/downloads/)  
-    *Mac*  
-    ```brew install python```  
-    *Ubuntu*  
-    ```sudo apt-get install python```  
 2. execute script  
     ```sudo python set_goagent.py```  
     ```sudo python set_goagent.py value```  
