@@ -108,6 +108,9 @@ def get_ip(ip_s, thread_limit=None, timeout=0.01):
             if not get_thread.is_alive():
                 thread_pool.remove(get_thread)
 
+        # if threading.activeCount() - init_threading_count == 1:
+        #     break
+
         # while threading.activeCount() > init_threading_count:
         #     pass
     print("all threads are done")
@@ -156,6 +159,8 @@ def group_ip(ip_ss):
         if '*.google.com' in temp_list[0] or 'google.com' in temp_list[0]:
             # yield {'name': 'google', 'ip': temp_list[1], 'ping': temp_list[2]}
             yield ['google', temp_list[1], temp_list[2]]
+        if 'google' in str(temp_list[0]):
+            yield ['google_hk', temp_list[1], temp_list[2]]
         if '*.facebook.com' in temp_list[0] or 'facebook.com' in temp_list[0]:
             # yield {'name': 'facebook', 'ip': temp_list[1], 'ping': temp_list[2]}
             yield ['facebook', temp_list[1], temp_list[2]]
@@ -193,20 +198,20 @@ def to_config(input_iter):
         import configparser  # python 3
         from configparser import DuplicateSectionError
         config = configparser.RawConfigParser()
+    config.add_section('iplist')
     for m in input_iter:
         try:
             config.add_section(m[0])
         except DuplicateSectionError:
             pass
         config.set(m[0], m[1], m[2][0])
-        if max_ping_value and m[2][1] and int(m[2][1]) < int(max_ping_value) or not max_ping_value and m[2] == 0:
-            if m[0] == 'appengine': # ping < 100
+        if not max_ping_value or (max_ping_value and m[2][1] and int(m[2][1]) < int(max_ping_value)) and m[2] == 0:
+            if m[0] == 'google_hk': # ping < 100
                 google_list.append(m[1])
             if m[0] == 'talk':
                 talk_list.append(m[1])
-    config.add_section('iplist')
     config.set('iplist', 'google_hk', '|'.join(google_list))
-    config.set('iplist', 'google_talk', '|'.join(talk_list))
+    # config.set('iplist', 'google_talk', '|'.join(talk_list))
     config.write(open('new_host_file', 'w'))
 
 
