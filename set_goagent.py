@@ -6,6 +6,7 @@ from GGC import  ggc_set,facebook_set,twitter_set
 import threading
 import time
 import ping
+import platform
 import requests
 import re
 from requests.exceptions import SSLError, Timeout
@@ -56,7 +57,11 @@ def get_host(ip_addr):
         return -2
     except SSLError as e:
         name_list = []
-        ping_list = ping.quiet_ping(ip_addr)
+        ping_list = []
+        if platform.system() == 'Linux':
+            ping_list = [0, 0, 0]
+        else:
+            ping_list = ping.quiet_ping(ip_addr)
         ping_artt = ping_list[2]
         ping_lost = ping_list[0]
         ping_value = ['delay: %.5sms, lost: %s%%' % (ping_artt, ping_lost), ping_artt, ping_lost]
@@ -273,7 +278,9 @@ class GetHost(threading.Thread):
 def run_pro():
     """
     """
-    get_ip(net_address(dict_name_set[set_name]), thread_limit=500)
+    if platform.system() == 'Linux':
+        print 'ping not support linux'
+    get_ip(net_address(dict_name_set[set_name]), thread_limit=200)
     to_config(group_ip(ipList))
 
 
