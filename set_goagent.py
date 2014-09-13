@@ -10,6 +10,7 @@ import platform
 import requests
 import re
 from requests.exceptions import SSLError, Timeout
+from netaddr import *
 
 
 
@@ -89,14 +90,15 @@ def get_ip(ip_s, thread_limit=None, timeout=0.01):
     read ip_set it is changed by net_address function, then requests.get and ping ip, if access successfully, append it to ipList.
     """
     # print ip_s
-    ip_addr_list=[]
+    # ip_addr_list=[]
     lock = threading.Lock()
     thread_pool = []
-    for ip_tuple in ip_s:
-        # print ip_tuple
-        for nu in range(ip_tuple[1], ip_tuple[2]):
-            ip = ip_tuple[0] + '.' + str(nu)
-            ip_addr_list.append(ip)
+    # for ip_tuple in ip_s:
+    #     # print ip_tuple
+    #     for nu in range(ip_tuple[1], ip_tuple[2]):
+    #         ip = ip_tuple[0] + '.' + str(nu)
+    #         ip_addr_list.append(ip)
+    ip_addr_list = [str(ip) for ip in IPSet(ip_s)]
 
     while ip_addr_list or thread_pool:
         while ip_addr_list and (thread_limit is None or len(thread_pool) < thread_limit):
@@ -222,35 +224,35 @@ def to_config(input_iter):
 
 
 
-def net_address(net_address_s):
-    """
-    "192.168.1.0/24" net address change to tuplues ("192.168.1", 0, 255)
-    """
-    ipList = []
-    def get_ip_number_list(m, ip_number):
-        n = 0
-        temp = 2 ** m
-        while 1:
-            if temp * n <= ip_number < temp * (n + 1):
-                return [temp * n, temp * (n + 1)]
-            n += 1
-    for net in net_address_s:
-        netlist = net.split('/')
-        if int(netlist[1]) == 24:
-            yield (netlist[0][:netlist[0].rindex('.')], 0, 255)
-        elif int(netlist[1]) > 24:
-            m = 32 - int(netlist[1])
-            ip_number = int(netlist[0].split('.')[3])
-            ip_number_list = get_ip_number_list(m, ip_number)
-            yield (netlist[0][:netlist[0].rindex('.')], ip_number_list[0], ip_number_list[1])
-        elif 16 <= int(netlist[1]) < 24:
-            m = 24 - int(netlist[1])
-            ip_number = int(netlist[0].split('.')[2])
-            ip_number_list = get_ip_number_list(m, ip_number)
-            for m in range(ip_number_list[0], ip_number_list[1]):
-                yield ('.'.join(netlist[0].split('.')[:2] + [str(m)]), 0,255)
-        else:
-            pass    # < 16  do nothing
+# def net_address(net_address_s):
+#     """
+#     "192.168.1.0/24" net address change to tuplues ("192.168.1", 0, 255)
+#     """
+#     ipList = []
+#     def get_ip_number_list(m, ip_number):
+#         n = 0
+#         temp = 2 ** m
+#         while 1:
+#             if temp * n <= ip_number < temp * (n + 1):
+#                 return [temp * n, temp * (n + 1)]
+#             n += 1
+#     for net in net_address_s:
+#         netlist = net.split('/')
+#         if int(netlist[1]) == 24:
+#             yield (netlist[0][:netlist[0].rindex('.')], 0, 255)
+#         elif int(netlist[1]) > 24:
+#             m = 32 - int(netlist[1])
+#             ip_number = int(netlist[0].split('.')[3])
+#             ip_number_list = get_ip_number_list(m, ip_number)
+#             yield (netlist[0][:netlist[0].rindex('.')], ip_number_list[0], ip_number_list[1])
+#         elif 16 <= int(netlist[1]) < 24:
+#             m = 24 - int(netlist[1])
+#             ip_number = int(netlist[0].split('.')[2])
+#             ip_number_list = get_ip_number_list(m, ip_number)
+#             for m in range(ip_number_list[0], ip_number_list[1]):
+#                 yield ('.'.join(netlist[0].split('.')[:2] + [str(m)]), 0,255)
+#         else:
+#             pass    # < 16  do nothing
 
 
 class GetHost(threading.Thread):
@@ -280,7 +282,8 @@ def run_pro():
     """
     if platform.system() == 'Linux':
         print 'ping not support linux'
-    get_ip(net_address(dict_name_set[set_name]), thread_limit=200)
+    # get_ip(net_address(dict_name_set[set_name]), thread_limit=200)
+    get_ip(dict_name_set[set_name], thread_limit=200)
     to_config(group_ip(ipList))
 
 
